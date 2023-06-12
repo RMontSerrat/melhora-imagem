@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { MdDownload, MdClose } from 'react-icons/md';
+import { MdDownload } from 'react-icons/md';
 import { Modal } from 'react-responsive-modal';
 import 'react-responsive-modal/styles.css';
 import Image from 'next/image';
@@ -10,7 +10,7 @@ import Image from 'next/image';
 const ImageImprovement = () => {
   const [imageUpload, setImageUpload] = useState<File | null>(null);
   const [imagePrediction, setImagePrediction] = useState(null);
-  // const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -29,17 +29,20 @@ const ImageImprovement = () => {
             'Content-Type': 'multipart/form-data',
           },
         });
-  
+        console.log(response, 'response')
         if (response.status !== 200) {
-          // setError('Erro');
+          setError('erro');
+          setIsLoading(false);
           return;
         }
   
         const prediction = response.data;
-        setImagePrediction(prediction.data);
+        setImagePrediction(prediction);
         setIsLoading(false);
         setIsModalOpen(true);
-      } catch (error) {
+      } catch (error: any) {
+        setError(error?.message || 'Erro');
+        setIsLoading(false);
         console.error('Ocorreu um erro ao enviar a imagem para a API:', error);
       }
     }
@@ -53,6 +56,7 @@ const ImageImprovement = () => {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const file: File | null = event.target.files ? event.target.files[0] : null;
+    setError(null);
     setImageUpload(file);
   };
   
@@ -95,7 +99,7 @@ const ImageImprovement = () => {
       >
         {isLoading ? 'Carregando...' : 'Fazer Upload da Imagem'}
       </button>
-
+      {error}
       {imagePrediction && (
         <Modal open={isModalOpen} onClose={handleModalClose} center>
           <div className="bg-white rounded-lg p-8 flex flex-col items-center md:flex-row md:items-center">
