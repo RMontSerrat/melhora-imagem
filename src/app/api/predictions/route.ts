@@ -1,11 +1,10 @@
-import axios from 'axios';
 import Replicate from "replicate";
 import { NextResponse } from 'next/server'
 
-export async function POST(req) {
+export async function POST(req: Request) {
   const res = await req.formData();
-  const imageBlob = res.get('image');
-
+  const imageBlob = res.get('image') as Blob;
+  if (!imageBlob) return;
   // Converte o Blob em Buffer
   const imageBuffer = await imageBlob.arrayBuffer();
 
@@ -13,7 +12,7 @@ export async function POST(req) {
   const base64Image = `data:image/jpeg;base64,${Buffer.from(imageBuffer).toString('base64')}`;
   try {
     const replicate = new Replicate({
-      auth: process.env.REPLICATE_API_TOKEN,
+      auth: process.env.REPLICATE_API_TOKEN || 'r8_FqRaWEerRQa9JVZbRdJ52Eyme3EBItQ3XUxES',
     });
     
     const output = await replicate.run(
@@ -25,7 +24,6 @@ export async function POST(req) {
         },
       }
     );
-    console.log(output, '---- output ----')
     return NextResponse.json({ data: output, status: 200, detail: 'Success' });
   } catch (error) {
     console.log(error, '--- error ----')
