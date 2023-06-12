@@ -1,3 +1,4 @@
+import axios from 'axios';
 import Replicate from "replicate";
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -30,6 +31,20 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export function GET(req: NextRequest) {
-  return NextResponse.json({ status: 200 });
+export async function GET(req: NextRequest) {
+  try {
+    const token = process.env.REPLICATE_API_TOKEN || 'r8_FqRaWEerRQa9JVZbRdJ52Eyme3EBItQ3XUxES';
+    const url = 'https://api.replicate.com/v1/predictions';
+
+    // Realiza a requisição GET com o cabeçalho de autorização
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    });
+
+    return NextResponse.json({ status: 200, results: response.data.results.length });
+  } catch (error) {
+    return NextResponse.json({ status: 500 });
+  }
 }
