@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { MdDownload, MdClose } from 'react-icons/md';
 import { Modal } from 'react-responsive-modal';
@@ -8,33 +8,33 @@ import 'react-responsive-modal/styles.css';
 import Image from 'next/image';
 
 const ImageImprovement = () => {
-  const [imageUpload, setImageUpload] = useState(null);
+  const [imageUpload, setImageUpload] = useState<File | null>(null);
   const [imagePrediction, setImagePrediction] = useState(null);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageUpload = async () => {
+  const handleImageUpload = useCallback(async () => {
     if (imageUpload) {
       setIsLoading(true);
-
+  
       try {
         const formData = new FormData();
         formData.append('image', imageUpload);
-
+  
         const response = await axios.post('/api/predictions', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
-
+  
         if (response.status !== 200) {
-          setError('Erro');
+          // setError('Erro');
           return;
         }
-
+  
         const prediction = response.data;
         setImagePrediction(prediction.data);
         setIsLoading(false);
@@ -43,21 +43,23 @@ const ImageImprovement = () => {
         console.error('Ocorreu um erro ao enviar a imagem para a API:', error);
       }
     }
-  };
-
+  }, [imageUpload]);
+  
   useEffect(() => {
     if (imageUpload) {
       handleImageUpload();
     }
-  }, [imageUpload]);
+  }, [handleImageUpload, imageUpload]);
 
-  const handleFileChange = (event) => {
-    const file = event ? event.target.files[0] : null;
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const file: File | null = event.target.files ? event.target.files[0] : null;
     setImageUpload(file);
   };
-
-  const handleButtonClick = () => {
-    fileInputRef.current.click();
+  
+  const handleButtonClick = (): void => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   const handleModalClose = () => {
@@ -65,7 +67,6 @@ const ImageImprovement = () => {
   };
 
   const handleDownload = () => {
-    // Verifica se a imagem foi carregada e cria um link temporário para download
     if (imagePrediction) {
       const link = document.createElement('a');
       link.href = imagePrediction;
