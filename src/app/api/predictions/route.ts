@@ -1,7 +1,7 @@
 import Replicate from "replicate";
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const res = await req.formData();
   const imageBlob = res.get('image') as Blob;
   if (!imageBlob) return;
@@ -28,4 +28,8 @@ export async function POST(req: Request) {
   } catch (error) {
     return NextResponse.json(error);
   }
+}
+
+export function GET(req: NextRequest) {
+  return NextResponse.json({ status: 200 });
 }
