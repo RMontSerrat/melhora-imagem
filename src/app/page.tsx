@@ -9,7 +9,7 @@ import 'react-responsive-modal/styles.css';
 import Image from 'next/image';
 
 const ImageImprovement = () => {
-  const [imageUpload, setImageUpload] = useState<File | null>(null);
+  const [imageUpload, setImageUpload] = useState<File | Blob | null>(null);
   const [imagePrediction, setImagePrediction] = useState(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -106,7 +106,7 @@ const ImageImprovement = () => {
           <div className="bg-white rounded-lg pt-7.5 md:p-6 flex flex-col items-center md:items-center">
             <div className="mb-4 md:mb-0 md:mr-4" style={{ width: '100%', maxWidth: '600px' }}>
               <ReactCompareImage 
-                leftImage={URL.createObjectURL(imageUpload)} 
+                leftImage={imageUpload ? URL.createObjectURL(imageUpload) : ''} 
                 rightImage={imagePrediction} 
                 leftImageLabel="Antes"
                 rightImageLabel="Depois"
