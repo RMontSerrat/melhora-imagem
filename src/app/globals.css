@@ -25,3 +25,20 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+div[data-testid="container"] {
+  height: 75vh !important;
+}
+
+div[data-testid="container"] img+div {
+  cursor: -webkit-grab;
+}
+
+div[data-testid="container"] img {
+  height: 100% !important;
+}
+
+.react-responsive-modal-modal {
+  width: calc(100% - 2.4rem);
+  max-width: 600px !important;
+}

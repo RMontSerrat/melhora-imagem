@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import ReactCompareImage from 'react-compare-image';
 import axios from 'axios';
 import { MdDownload } from 'react-icons/md';
 import { Modal } from 'react-responsive-modal';
@@ -102,13 +103,21 @@ const ImageImprovement = () => {
       {error}
       {imagePrediction && (
         <Modal open={isModalOpen} onClose={handleModalClose} center>
-          <div className="bg-white rounded-lg p-8 flex flex-col items-center md:flex-row md:items-center">
-            <div className="mb-4 md:mb-0 md:mr-4">
-              <Image className="h-auto desktop:h-500px" src={imagePrediction} alt="Imagem replicada" width={500} height={500} style={{ objectFit: 'contain' }} />
+          <div className="bg-white rounded-lg pt-7.5 md:p-6 flex flex-col items-center md:items-center">
+            <div className="mb-4 md:mb-0 md:mr-4" style={{ width: '100%', maxWidth: '600px' }}>
+              <ReactCompareImage 
+                leftImage={URL.createObjectURL(imageUpload)} 
+                rightImage={imagePrediction} 
+                leftImageLabel="Antes"
+                rightImageLabel="Depois"
+                sliderLineWidth={3}
+                sliderLineColor="white"
+                hover
+              />
             </div>
-            <div className="w-full md:w-auto">
+            <div className="w-full" style={{ marginTop: '20px'}}>
               <button
-                className="font-montserrat flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg w-full md:w-auto"
+                className="font-montserrat flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg w-full"
                 onClick={handleDownload}
               >
                 <MdDownload className="mr-2" />
