@@ -2,11 +2,11 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import ReactCompareImage from 'react-compare-image';
+import Image from 'next/image';
 import axios from 'axios';
 import { MdDownload } from 'react-icons/md';
 import { Modal } from 'react-responsive-modal';
 import 'react-responsive-modal/styles.css';
-import Image from 'next/image';
 
 const ImageImprovement = () => {
   const [imageUpload, setImageUpload] = useState<File | Blob | null>(null);
@@ -40,7 +40,6 @@ const ImageImprovement = () => {
         const prediction = response.data;
         setImagePrediction(prediction);
         setIsLoading(false);
-        setIsModalOpen(true);
       } catch (error: any) {
         setError(error?.message || 'Erro');
         setIsLoading(false);
@@ -52,6 +51,7 @@ const ImageImprovement = () => {
   useEffect(() => {
     if (imageUpload) {
       handleImageUpload();
+      setIsModalOpen(true);
     }
   }, [handleImageUpload, imageUpload]);
 
@@ -81,6 +81,8 @@ const ImageImprovement = () => {
     }
   };
 
+  console.log(imageUpload, 'imageUpload')
+
   return (
     <div className="bg-black text-white min-h-screen flex flex-col justify-center text-center items-center py-2 px-4">
       <h1 className="text-4xl font-bold mb-4 font-montserrat">Melhore suas imagens</h1>
@@ -101,19 +103,22 @@ const ImageImprovement = () => {
         {isLoading ? 'Carregando...' : 'Fazer Upload da Imagem'}
       </button>
       {error}
-      {imagePrediction && (
+      {imageUpload && (
         <Modal open={isModalOpen} onClose={handleModalClose} center>
           <div className="bg-white rounded-lg pt-7.5 md:p-6 flex flex-col items-center md:items-center">
-            <div className="mb-4 md:mb-0 md:mr-4" style={{ width: '100%', maxWidth: '600px' }}>
-              <ReactCompareImage 
-                leftImage={imageUpload ? URL.createObjectURL(imageUpload) : ''} 
-                rightImage={imagePrediction} 
-                leftImageLabel="Antes"
-                rightImageLabel="Depois"
-                sliderLineWidth={3}
-                sliderLineColor="white"
-                hover
-              />
+            <div className="mb-4 md:mb-0 md:mr-4" style={{ width: '100%', maxWidth: '600px', height: '75vh', position: 'relative' }}>
+              <Image src={URL.createObjectURL(imageUpload)} fill objectFit='cover' />
+              {imagePrediction && (
+                <ReactCompareImage 
+                  leftImage={imageUpload ? URL.createObjectURL(imageUpload) : ''} 
+                  rightImage={imagePrediction} 
+                  leftImageLabel="Antes"
+                  rightImageLabel="Depois"
+                  sliderLineWidth={3}
+                  sliderLineColor="white"
+                  hover
+                />
+              )}
             </div>
             <div className="w-full" style={{ marginTop: '20px'}}>
               <button
