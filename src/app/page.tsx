@@ -131,7 +131,7 @@ const ImageImprovement = () => {
                   }}
                 >
                   <div style={{ position: 'absolute', width: '100%', height: '100%', opacity: 0.5 }}>
-                    <Image src={URL.createObjectURL(imageUpload)} layout="fill" objectFit="cover" />
+                    <Image alt="image loaded" src={URL.createObjectURL(imageUpload)} fill style={{ objectFit: 'cover' }} />
                   </div>
                   <div style={{ position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
                     <div>
