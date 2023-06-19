@@ -17,11 +17,11 @@ export async function POST(req: NextRequest) {
     });
     
     const output = await replicate.run(
-      "mv-lab/swin2sr:a01b0512004918ca55d02e554914a9eca63909fa83a29ff0f115c78a7045574f",
+      "nightmareai/real-esrgan:42fed1c4974146d4d2414e2be2c5277c7fcf05fcc3a73abf41610695738c1d7b",
       {
         input: {
           image: base64Image,
-          // scale: 2,
+          scale: 2,
         },
       }
     );
