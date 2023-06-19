@@ -2,11 +2,63 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import ReactCompareImage from 'react-compare-image';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import axios from 'axios';
 import { MdDownload } from 'react-icons/md';
 import { Modal } from 'react-responsive-modal';
 import 'react-responsive-modal/styles.css';
+
+async function resizeImage(file: File, maxSizeInBytes: number): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function (event: ProgressEvent<FileReader>) {
+      const img = new Image();
+      img.onload = function () {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const maxWidth = 800;
+        const maxHeight = 800;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(function (blob) {
+          if (blob) {
+            if (blob.size <= maxSizeInBytes) {
+              resolve(blob);
+            } else {
+              reject(new Error('Image exceeds the maximum size.'));
+            }
+          } else {
+            reject(new Error('Failed to resize image.'));
+          }
+        }, 'image/jpeg', 0.7); // 0.7 is the image quality (0.0 - 1.0)
+      };
+      if (event.target) {
+        img.src = event.target.result as string;
+      }
+    };
+    reader.onerror = function (event: ProgressEvent<FileReader>) {
+      reject(new Error('Failed to read image file.'));
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 const ImageImprovement = () => {
   const [imageUpload, setImageUpload] = useState<File | Blob | null>(null);
@@ -57,10 +109,17 @@ const ImageImprovement = () => {
     }
   }, [handleImageUpload, imageUpload]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file: File | null = event.target.files ? event.target.files[0] : null;
     setError(null);
-    setImageUpload(file);
+    if (!file) return;
+    const maxSize = 300 * 1024; // 300KB
+    try {
+      const resizedImage = await resizeImage(file, maxSize);
+      setImageUpload(resizedImage);
+    } catch (error) {
+      setImageUpload(file);
+    }
   };
 
   const handleButtonClick = (): void => {
@@ -131,7 +190,7 @@ const ImageImprovement = () => {
                   }}
                 >
                   <div style={{ position: 'absolute', width: '100%', height: '100%', opacity: 0.5 }}>
-                    <Image alt="image loaded" src={URL.createObjectURL(imageUpload)} fill style={{ objectFit: 'cover' }} />
+                    <NextImage alt="image loaded" src={URL.createObjectURL(imageUpload)} fill style={{ objectFit: 'cover' }} />
                   </div>
                   <div style={{ position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
                     <div>
