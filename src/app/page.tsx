@@ -113,7 +113,7 @@ const ImageImprovement = () => {
     const file: File | null = event.target.files ? event.target.files[0] : null;
     setError(null);
     if (!file) return;
-    const maxSize = 300 * 1024; // 300KB
+    const maxSize = 200 * 1024; // 300KB
     try {
       const resizedImage = await resizeImage(file, maxSize);
       setImageUpload(resizedImage);
@@ -176,7 +176,6 @@ const ImageImprovement = () => {
                   rightImageLabel="Depois"
                   sliderLineWidth={3}
                   sliderLineColor="white"
-                  hover
                 />
               ) : (
                 <div
