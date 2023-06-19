@@ -40,5 +40,6 @@ div[data-testid="container"] img {
 
 .react-responsive-modal-modal {
   width: calc(100% - 2.4rem);
+  padding-top: 60px !important;
   max-width: 600px !important;
 }
