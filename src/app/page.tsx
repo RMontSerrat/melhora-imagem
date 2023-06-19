@@ -35,7 +35,7 @@ async function resizeImage(file: File, maxSizeInBytes: number): Promise<Blob> {
 
         canvas.width = width;
         canvas.height = height;
-        ctx.drawImage(img, 0, 0, width, height);
+        ctx?.drawImage(img, 0, 0, width, height);
 
         canvas.toBlob(function (blob) {
           if (blob) {
